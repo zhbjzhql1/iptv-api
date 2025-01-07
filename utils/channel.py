@@ -16,6 +16,7 @@ from utils.config import config
 from utils.speed import (
     get_speed,
     sort_urls,
+    check_ffmpeg_installed_status
 )
 from utils.tools import (
     get_name_url,
@@ -196,10 +197,9 @@ def get_channel_multicast_name_region_type_result(result, names):
     """
     name_region_type_result = {}
     for name in names:
-        format_name = format_channel_name(name)
-        data = result.get(format_name)
+        data = result.get(name)
         if data:
-            name_region_type_result[format_name] = data
+            name_region_type_result[name] = data
     return name_region_type_result
 
 
@@ -536,7 +536,7 @@ def append_total_data(
                     )
                     print(f"{method.capitalize()}:", len(name_results), end=", ")
             print(
-                "total:",
+                "Total:",
                 len(data.get(cate, {}).get(name, [])),
             )
     if config.open_keep_all:
@@ -561,7 +561,7 @@ def append_total_data(
                     )
                     print(name, f"{method.capitalize()}:", len(urls), end=", ")
                     print(
-                        "total:",
+                        "Total:",
                         len(data.get(cate, {}).get(name, [])),
                     )
 
@@ -572,6 +572,7 @@ async def process_sort_channel_list(data, ipv6=False, callback=None):
     """
     ipv6_proxy = None if (not config.open_ipv6 or ipv6) else constants.ipv6_proxy
     open_filter_resolution = config.open_filter_resolution
+    get_resolution = open_filter_resolution and check_ffmpeg_installed_status()
     sort_timeout = config.sort_timeout
     need_sort_data = copy.deepcopy(data)
     process_nested_dict(need_sort_data, seen=set(), flag=r"cache:(.*)", force_str="!")
@@ -588,7 +589,7 @@ async def process_sort_channel_list(data, ipv6=False, callback=None):
             limited_get_speed(
                 info,
                 ipv6_proxy=ipv6_proxy,
-                filter_resolution=open_filter_resolution,
+                filter_resolution=get_resolution,
                 timeout=sort_timeout,
                 callback=callback,
             )
@@ -601,7 +602,6 @@ async def process_sort_channel_list(data, ipv6=False, callback=None):
     logger = get_logger(constants.sort_log_path, level=INFO, init=True)
     open_supply = config.open_supply
     open_filter_speed = config.open_filter_speed
-    open_filter_resolution = config.open_filter_resolution
     min_speed = config.min_speed
     min_resolution = config.min_resolution_value
     for cate, obj in data.items():
@@ -625,7 +625,9 @@ def write_channel_to_file(data, ipv6=False, callback=None):
     Write channel to file
     """
     try:
-        path = "output/result_new.txt"
+        path = constants.result_path
+        if not os.path.exists("output"):
+            os.makedirs("output")
         no_result_name = []
         open_empty_category = config.open_empty_category
         ipv_type_prefer = list(config.ipv_type_prefer)
