@@ -4,7 +4,7 @@
 </div>
 
 <div align="center">A highly customizable IPTV interface update project 📺, with customizable channel menus, automatic live stream acquisition, speed testing, and validation to generate usable results, achieving 『✨instant playback experience🚀』</div>
-
+<br>
 <p align="center">
   <a href="https://github.com/Guovin/iptv-api/releases/latest">
     <img src="https://img.shields.io/github/v/release/guovin/iptv-api" />
@@ -40,7 +40,7 @@
 - [📣 Disclaimer](#disclaimer)
 - [⚖️ License](#license)
 
-📍Default subscription sources are from:
+📍Subscription sources are from:
 
 - [iptv-org/iptv](https://github.com/iptv-org/iptv)
 - [suxuang/myIPTV](https://github.com/suxuang/myIPTV)
@@ -72,12 +72,14 @@
 - Interface source:
 
 ```bash
-https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u
+https://ghproxy.cc/https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u
 ```
 
 ```bash
-https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.txt
+https://ghproxy.cc/https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.txt
 ```
+
+🙏 Thanks to [ghproxy.cc](https://ghproxy.cc) for providing proxy acceleration services
 
 or
 
@@ -92,7 +94,7 @@ https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt
 - Data source:
 
 ```bash
-https://raw.githubusercontent.com/Guovin/iptv-api/gd/source.json
+https://ghproxy.cc/https://raw.githubusercontent.com/Guovin/iptv-api/gd/source.json
 ```
 
 or
@@ -215,10 +217,22 @@ It's recommended to try each one and choose the version that suits you
 docker pull guovern/iptv-api:latest
 ```
 
+🚀 Proxy acceleration (recommended for users in China):
+
+```bash
+docker pull docker.1ms.run/guovern/iptv-api:latest
+```
+
 - iptv-api:lite
 
 ```bash
 docker pull guovern/iptv-api:lite
+```
+
+🚀 Proxy acceleration (recommended for users in China):
+
+```bash
+docker pull docker.1ms.run/guovern/iptv-api:lite
 ```
 
 2. Run the container:
@@ -261,11 +275,11 @@ Port environment variables:
 
 3. Update results:
 
-- API address: ip:8000
-- M3u api：ip:8000/m3u
-- Txt api：ip:8000/txt
-- API content: ip:8000/content
-- Speed test log: ip:8000/log
+- API address: `ip:8000`
+- m3u api：`ip:8000/m3u`
+- txt api：`ip:8000/txt`
+- API content: `ip:8000/content`
+- Speed test log: `ip:8000/log`
 
 ## Changelog
 

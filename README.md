@@ -4,7 +4,7 @@
 </div>
 
 <div align="center">一个可高度自定义的IPTV接口更新项目📺，自定义频道菜单，自动获取直播源，测速验效后生成可用的结果，可实现『✨秒播级体验🚀』</div>
-
+<br>
 <p align="center">
   <a href="https://github.com/Guovin/iptv-api/releases/latest">
     <img src="https://img.shields.io/github/v/release/guovin/iptv-api" />
@@ -40,7 +40,7 @@
 - [📣 免责声明](#免责声明)
 - [⚖️ 许可证](#许可证)
 
-📍默认订阅源来自：
+📍订阅源来自：
 
 - [iptv-org/iptv](https://github.com/iptv-org/iptv)
 - [suxuang/myIPTV](https://github.com/suxuang/myIPTV)
@@ -72,12 +72,14 @@
 - 接口源：
 
 ```bash
-https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u
+https://ghproxy.cc/https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u
 ```
 
 ```bash
-https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.txt
+https://ghproxy.cc/https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.txt
 ```
+
+🙏 感谢由[ghproxy.cc](https://ghproxy.cc)提供的代理加速服务
 
 或
 
@@ -92,7 +94,7 @@ https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.txt
 - 数据源：
 
 ```bash
-https://raw.githubusercontent.com/Guovin/iptv-api/gd/source.json
+https://ghproxy.cc/https://raw.githubusercontent.com/Guovin/iptv-api/gd/source.json
 ```
 
 或
@@ -209,10 +211,22 @@ pipenv run ui
 docker pull guovern/iptv-api:latest
 ```
 
+🚀 代理加速（推荐国内用户使用）：
+
+```bash
+docker pull docker.1ms.run/guovern/iptv-api:latest
+```
+
 - iptv-api:lite：
 
 ```bash
 docker pull guovern/iptv-api:lite
+```
+
+🚀 代理加速（推荐国内用户使用）：
+
+```bash
+docker pull docker.1ms.run/guovern/iptv-api:lite
 ```
 
 2. 运行容器：
@@ -254,11 +268,11 @@ docker run -v /etc/docker/config:/iptv-api-lite/config -v /etc/docker/output:/ip
 
 3. 更新结果：
 
-- 接口地址：ip:8000
-- M3u 接口：ip:8000/m3u
-- Txt 接口：ip:8000/txt
-- 接口内容：ip:8000/content
-- 测速日志：ip:8000/log
+- 接口地址：`ip:8000`
+- m3u 接口：`ip:8000/m3u`
+- txt 接口：`ip:8000/txt`
+- 接口内容：`ip:8000/content`
+- 测速日志：`ip:8000/log`
 
 ## 更新日志
 
