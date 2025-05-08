@@ -15,6 +15,7 @@ from updates.epg.tools import write_to_xml, compress_to_gz
 from utils.alias import Alias
 from utils.config import config
 from utils.db import get_db_connection, return_db_connection
+from utils.ip_checker import IPChecker
 from utils.speed import (
     get_speed,
     get_speed_result,
@@ -33,7 +34,6 @@ from utils.tools import (
     get_logger,
     get_datetime_now,
     get_url_host,
-    check_url_ipv6,
     check_ipv_type_match,
     get_ip_address,
     convert_to_m3u,
@@ -43,7 +43,10 @@ from utils.tools import (
 from utils.types import ChannelData, OriginType, CategoryChannelData
 
 channel_alias = Alias()
+ip_checker = IPChecker()
 frozen_channels = set()
+location_list = config.location
+isp_list = config.isp
 
 
 def format_channel_data(url: str, origin: OriginType) -> ChannelData:
@@ -519,9 +522,13 @@ def append_data_to_info_data(
             url = item["url"]
             host = item.get("host") or get_url_host(url)
             date = item.get("date")
+            delay = item.get("delay")
+            speed = item.get("speed")
             resolution = item.get("resolution")
             url_origin = item.get("origin", origin)
             ipv_type = item.get("ipv_type")
+            location = item.get("location")
+            isp = item.get("isp")
             headers = item.get("headers")
             catchup = item.get("catchup")
             extra_info = item.get("extra_info", "")
@@ -535,9 +542,20 @@ def append_data_to_info_data(
                 if ipv_type_data and host in ipv_type_data:
                     ipv_type = ipv_type_data[host]
                 else:
-                    ipv_type = "ipv6" if check_url_ipv6(url) else "ipv4"
+                    ipv_type = ip_checker.get_ipv_type(url)
                     if ipv_type_data is not None:
                         ipv_type_data[host] = ipv_type
+
+            if not location or not isp:
+                ip = ip_checker.get_ip(url)
+                if ip:
+                    location, isp = ip_checker.find_map(ip)
+
+            if location and location_list and not any(item in location for item in location_list):
+                continue
+
+            if isp and isp_list and not any(item in isp for item in isp_list):
+                continue
 
             for idx, info in enumerate(info_data[category][name]):
                 if not info.get("url"):
@@ -556,9 +574,13 @@ def append_data_to_info_data(
                             "url": info_url,
                             "host": host,
                             "date": date,
+                            "delay": delay,
+                            "speed": speed,
                             "resolution": resolution,
                             "origin": origin,
                             "ipv_type": ipv_type,
+                            "location": location,
+                            "isp": isp,
                             "headers": headers,
                             "catchup": catchup,
                             "extra_info": extra_info
@@ -578,9 +600,13 @@ def append_data_to_info_data(
                     "url": url,
                     "host": host,
                     "date": date,
+                    "delay": delay,
+                    "speed": speed,
                     "resolution": resolution,
                     "origin": url_origin,
                     "ipv_type": ipv_type,
+                    "location": location,
+                    "isp": isp,
                     "headers": headers,
                     "catchup": catchup,
                     "extra_info": extra_info
@@ -732,26 +758,31 @@ async def test_speed(data, ipv6=False, callback=None):
     return grouped_results
 
 
-def sort_channel_result(channel_data, result, filter_host=False, ipv6_support=True):
+def sort_channel_result(channel_data, result=None, filter_host=False, ipv6_support=True):
     """
     Sort channel result
     """
     channel_result = defaultdict(lambda: defaultdict(list))
-    logger = get_logger(constants.speed_test_log_path, level=INFO, init=True)
+    logger = get_logger(constants.result_log_path, level=INFO, init=True)
     for cate, obj in channel_data.items():
         for name, values in obj.items():
             if not values:
                 continue
             whitelist_result = []
-            test_result = [] if filter_host else result.get(cate, {}).get(name, [])
+            test_result = [] if filter_host or not result else result.get(cate, {}).get(name, [])
             for value in values:
                 if value["origin"] in ["whitelist", "live", "hls"] or (
-                        not ipv6_support and value["ipv_type"] == "ipv6"):
+                        not ipv6_support and result and value["ipv_type"] == "ipv6"
+                ):
                     whitelist_result.append(value)
-                elif filter_host:
-                    test_result.append({**value, **get_speed_result(value["host"])})
-            total_result = whitelist_result + get_sort_result(test_result, name=name, ipv6_support=ipv6_support,
-                                                              logger=logger)
+                elif filter_host or not result:
+                    test_result.append({**value, **get_speed_result(value["host"])} if filter_host else value)
+            total_result = whitelist_result + get_sort_result(
+                test_result,
+                name=name,
+                ipv6_support=ipv6_support,
+                logger=logger
+            )
             append_data_to_info_data(
                 channel_result,
                 cate,
