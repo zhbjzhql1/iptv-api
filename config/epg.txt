@@ -5,3 +5,7 @@ http://epg.51zmt.top:8000/e.xml
 https://e.erw.cc/e.xml
 https://raw.githubusercontent.com/fanmingming/live/main/e.xml
 https://assets.livednow.com/epg.xml
+https://gitee.com/taksssss/tv/raw/main/epg/112114.xml.gz
+https://gitee.com/taksssss/tv/raw/main/epg/51zmt.xml.gz
+https://gitee.com/taksssss/tv/raw/main/epg/erw.xml.gz
+https://gitee.com/taksssss/tv/raw/main/epg/epgpw_cn.xml.gz
